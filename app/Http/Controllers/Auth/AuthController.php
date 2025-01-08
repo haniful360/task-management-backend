@@ -33,12 +33,12 @@ class AuthController extends Controller
 
         $user->save();
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        // $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'message' => "Post created successfully",
             'user' => $user,
-            'token' => $token
+            // 'token' => $token
         ], 201);
     }
 
