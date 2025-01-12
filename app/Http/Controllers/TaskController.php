@@ -15,8 +15,8 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = Task::where('user_id', Auth::id())->get(); // Fetch tasks for the authenticated user
-        return TaskResource::collection($tasks); // Return tasks in a standardized format
+        $tasks = Task::where('user_id', Auth::id())->get();
+        return TaskResource::collection($tasks);
     }
 
     /**
@@ -24,20 +24,20 @@ class TaskController extends Controller
      */
     public function store(TaskRequest $request)
     {
-        $data = $request->validated(); // Validate and get the data
-        $data['user_id'] = Auth::id(); // Assign authenticated user's ID
+        $data = $request->validated();
+        $data['user_id'] = Auth::id();
 
-        $task = Task::create($data); // Create the task
+        $task = Task::create($data);
 
-        return new TaskResource($task); // Return created task in a standardized format
+        return new TaskResource($task);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show($slug)
     {
-        $task = Task::find($id);
+        $task = Task::where('slug', $slug)->first();
 
         if (!$task) {
             return response()->json([
@@ -46,15 +46,16 @@ class TaskController extends Controller
             ], 404);
         }
 
-        return new TaskResource($task); // Return the task if found
+        return new TaskResource($task);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(TaskRequest $request, $id)
+    public function update(TaskRequest $request, $slug)
     {
-        $task = Task::find($id);
+        $task = Task::where('slug', $slug)->first();
+
 
         if (!$task) {
             return response()->json([
@@ -63,17 +64,17 @@ class TaskController extends Controller
             ], 404);
         }
 
-        $task->update($request->validated()); // Update the task with validated data
+        $task->update($request->validated());
 
-        return new TaskResource($task); // Return updated task
+        return new TaskResource($task);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy($slug)
     {
-        $task = Task::find($id);
+        $task = Task::where('slug', $slug)->first();
 
         if (!$task) {
             return response()->json([
@@ -82,7 +83,7 @@ class TaskController extends Controller
             ], 404);
         }
 
-        $task->delete(); // Delete the task
+        $task->delete();
 
         return response()->json([
             'success' => true,

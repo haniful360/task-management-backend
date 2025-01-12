@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Task extends Model
 {
@@ -20,10 +21,26 @@ class Task extends Model
         'status',
         'due_date',
         'user_id',
+        'slug'
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($task) {
+            $task->slug = Str::slug($task->name) . '-' . uniqid(); // Ensure unique slug
+        });
+
+        static::updating(function ($task) {
+            if ($task->isDirty('name')) {
+                $task->slug = Str::slug($task->name) . '-' . uniqid();
+            }
+        });
     }
 }
